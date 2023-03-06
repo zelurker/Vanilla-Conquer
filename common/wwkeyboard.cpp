@@ -92,7 +92,10 @@ WWKeyboardClass::WWKeyboardClass(void)
     , Tail(0)
     , DownSkip(0)
 {
+#if defined(_WIN32)
     memset(KeyState, '\0', sizeof(KeyState));
+#endif
+
     memset(DownState, '\0', sizeof(DownState));
 }
 
@@ -302,19 +305,6 @@ KeyASCIIType WWKeyboardClass::To_ASCII(unsigned short key)
     }
 
     /*
-    **	Set the KeyState buffer to reflect the shift bits stored in the key value.
-    */
-    if (key & WWKEY_SHIFT_BIT) {
-        KeyState[VK_SHIFT] = 0x80;
-    }
-    if (key & WWKEY_CTRL_BIT) {
-        KeyState[VK_CONTROL] = 0x80;
-    }
-    if (key & WWKEY_ALT_BIT) {
-        KeyState[VK_MENU] = 0x80;
-    }
-
-    /*
     **	Ask windows to translate the key into an ASCII equivalent.
     */
     char buffer[10];
@@ -334,9 +324,21 @@ KeyASCIIType WWKeyboardClass::To_ASCII(unsigned short key)
         return sdl_keymap[key];
     }
 #elif defined(_WIN32)
+    /*
+    **	Set the KeyState buffer to reflect the shift bits stored in the key value.
+    */
+    if (key & WWKEY_SHIFT_BIT) {
+        KeyState[VK_SHIFT] = 0x80;
+    }
+    if (key & WWKEY_CTRL_BIT) {
+        KeyState[VK_CONTROL] = 0x80;
+    }
+    if (key & WWKEY_ALT_BIT) {
+        KeyState[VK_MENU] = 0x80;
+    }
+
     scancode = MapVirtualKeyA(key & 0xFF, 0);
     result = ToAscii((UINT)(key & 0xFF), (UINT)scancode, (PBYTE)KeyState, (LPWORD)buffer, (UINT)0);
-#endif
 
     /*
     **	Restore the KeyState buffer back to pristine condition.
@@ -350,6 +352,7 @@ KeyASCIIType WWKeyboardClass::To_ASCII(unsigned short key)
     if (key & WWKEY_ALT_BIT) {
         KeyState[VK_MENU] = 0;
     }
+#endif
 
     /*
     **	If Windows could not perform the translation as expected, then

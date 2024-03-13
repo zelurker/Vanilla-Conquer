@@ -2056,7 +2056,12 @@ bool Read_Scenario_INI(char* fname, bool)
         ** If this is scenario 1 then it should be on all CDs unless its an ant scenario
         */
         if (Scen.Scenario == 1 && Scen.ScenarioName[2] != 'A') {
-            RequiredCD = -1;
+	    if (Scen.ScenarioName[2] == 'G')
+		RequiredCD = 1; // CD_ALLIED;
+	    else if (Scen.ScenarioName[2] == 'N')
+		RequiredCD = 0; // CD_SOVIET;
+	    else
+		RequiredCD = -1; // CD_ANY;
         } else {
             //			Mono_Printf("Read_SCen_INI scenario is: %s\n", Scen.ScenarioName);
             /*

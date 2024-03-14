@@ -123,7 +123,10 @@ bool Start_Scenario(char* root, bool briefing)
         */
         if (Scen.Scenario < 20 && (!Special.IsJurassic || !AreThingiesEnabled)) {
             if (Scen.Scenario != 1 || Whom == HOUSE_GOOD) {
-                Play_Movie(IntroMovie);
+		if (ScenPlayer == SCEN_PLAYER_JP)
+                    Play_Movie(BriefMovie);
+		else
+		    Play_Movie(IntroMovie);
             }
 #ifndef REMASTER_BUILD
             if (Scen.Scenario > 1 || Whom == HOUSE_BAD) {

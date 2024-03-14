@@ -125,17 +125,21 @@ bool Expansion_Dialog(void)
     int index;
     INIClass ini;
 
-    for (index = 20; index < 60; index++) {
+    for (index = 19; index < 60; index++) {
         char buffer[128];
         CCFileClass file;
 
-        Set_Scenario_Name(buffer, index, SCEN_PLAYER_GDI, SCEN_DIR_EAST, SCEN_VAR_A);
-        strcat(buffer, ".INI");
-        file.Set_Name(buffer);
+	if (index == 19) {
+	    file.Set_Name("SCJ01EA.INI");
+	} else {
+	    Set_Scenario_Name(buffer, index, SCEN_PLAYER_GDI, SCEN_DIR_EAST, SCEN_VAR_A);
+	    strcat(buffer, ".INI");
+	    file.Set_Name(buffer);
+	}
         if (file.Is_Available()) {
             ini.Clear();
             ini.Load(file);
-            ini.Get_String("Basic", "Name", "x", buffer, sizeof(buffer));
+            ini.Get_String("Basic", "Name", "Funpark", buffer, sizeof(buffer));
 
             char* data = new char[strlen(buffer) + 1 + sizeof(int) + 25];
             *((int*)&data[0]) = index;
@@ -145,18 +149,22 @@ bool Expansion_Dialog(void)
         }
     }
 
-    for (index = 20; index < 60; index++) {
+    for (index = 19; index < 60; index++) {
         char buffer[128];
         CCFileClass file;
 
-        Set_Scenario_Name(buffer, index, SCEN_PLAYER_NOD, SCEN_DIR_EAST, SCEN_VAR_A);
-        strcat(buffer, ".INI");
-        file.Set_Name(buffer);
+	if (index == 19) {
+	    file.Set_Name("SCJ01EA.INI");
+	} else {
+	    Set_Scenario_Name(buffer, index, SCEN_PLAYER_NOD, SCEN_DIR_EAST, SCEN_VAR_A);
+	    strcat(buffer, ".INI");
+	    file.Set_Name(buffer);
+	}
         if (file.Is_Available()) {
 
             ini.Clear();
             ini.Load(file);
-            ini.Get_String("Basic", "Name", "x", buffer, sizeof(buffer));
+            ini.Get_String("Basic", "Name", "funpark", buffer, sizeof(buffer));
             char* data = new char[strlen(buffer) + 1 + sizeof(int) + 25];
             *((int*)&data[0]) = index;
             strcpy(&data[sizeof(int)], "NOD: ");
@@ -213,6 +221,10 @@ bool Expansion_Dialog(void)
                 ScenDir = SCEN_DIR_EAST;
                 Whom = HOUSE_GOOD;
                 Scen.Scenario = *(int*)list.Current_Item();
+		if (Scen.Scenario == 19) {
+		    Scen.Scenario = 1;
+		    ScenPlayer = SCEN_PLAYER_JP;
+		}
                 okval = true;
                 process = false;
                 break;

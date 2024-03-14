@@ -48,6 +48,7 @@ private:
     {
         char const* Name; // Filename of score.
         int Fullname;     // Text number for full score name.
+	char const *orig; // original title name, to be able to find it from themes !!!
         int Scenario;     // Scenario when it first becomes available.
         int Duration;     // Duration of theme in seconds.
         bool Normal;      // Allowed in normal game play?

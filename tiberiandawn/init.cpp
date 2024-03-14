@@ -451,6 +451,8 @@ bool Init_Game(int, char*[])
     }
     CCDebugString("C&C95 - About to register SOUNDS.MIX\n");
     new MFCD("SOUNDS.MIX"); // Cached.
+    new MFCD("SC-000.MIX");
+    MFCD::Cache("SC-000.MIX"); // required to get the dino sounds, DINOATK1 for example, when playing funpark
 
     /*
     **	Find and process any rules for this game.

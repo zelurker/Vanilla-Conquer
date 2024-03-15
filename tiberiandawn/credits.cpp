@@ -109,12 +109,9 @@ void CreditClass::Graphic_Logic(bool forced)
         unsigned fore = factor ? 11 : WHITE;
 
         TabClass::Draw_Credits_Tab();
-	char buff[10];
-	snprintf(buff,10,"%ld",Current);
-	// for some unknown reason, the last argument here after flags gets corrupted ?
-	// the easiest workaround is to pass directly a string buffer, I guess it must just be some alignment problem on stack
-	// but I am not totally sure (got the problem in 64 bits). It shows on any "new mission", funpark, Blackout, psx...
-        Fancy_Text_Print(buff, xx, 0, fore, TBLACK, flags);
+	// %d here, not %ld, in 64 bits %ld is 8 bytes, but Current is an int !!!
+	// it was creating a crazy display for some maps !
+        Fancy_Text_Print("%d", xx, 0, fore, TBLACK, flags, Current);
 
         IsToRedraw = false;
         IsAudible = false;

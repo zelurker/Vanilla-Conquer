@@ -125,7 +125,7 @@ bool Expansion_Dialog(void)
     int index;
     INIClass ini;
 
-    for (index = 19; index < 60; index++) {
+    for (index = 19; index < 65; index++) {
         char buffer[128];
         CCFileClass file;
 
@@ -149,7 +149,7 @@ bool Expansion_Dialog(void)
         }
     }
 
-    for (index = 19; index < 60; index++) {
+    for (index = 19; index < 64; index++) {
         char buffer[128];
         CCFileClass file;
 

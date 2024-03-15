@@ -535,7 +535,8 @@ void Prog_End(const char* why, bool fatal) // Added why and fatal parameters. ST
         GlyphX_Debug_Print(why);
     }
     if (fatal) {
-        *((int*)0) = 0;
+        // *((int*)0) = 0;
+	exit(1); // much better than a core dump, thanks... !
     }
 
 #ifndef DEMO

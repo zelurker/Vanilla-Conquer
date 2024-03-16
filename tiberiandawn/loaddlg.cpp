@@ -267,7 +267,7 @@ int LoadOptionsClass::Process(void)
     listbtn.Add_Tail(*commands);
     if (Style == SAVE) {
         editbtn.Add_Tail(*commands);
-        editbtn.Set_Focus();
+        // editbtn.Set_Focus();
     }
 
     /*
@@ -359,7 +359,7 @@ int LoadOptionsClass::Process(void)
         */
         if (firsttime && Style == SAVE) {
             firsttime = false;
-            editbtn.Set_Focus();
+            // editbtn.Set_Focus();
             editbtn.Flag_To_Redraw();
         }
 

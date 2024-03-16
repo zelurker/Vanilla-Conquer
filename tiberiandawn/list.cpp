@@ -279,7 +279,13 @@ int ListClass::Action(unsigned flags, KeyNumType& key)
             } else if (key == KN_DOWN) {
                 Step_Selected_Index(1);
                 key = KN_NONE;
-            } else {
+            } else if (key == KN_MOUSEWHEEL_UP) {
+		Step(1);
+                key = KN_NONE;
+	    } else if (key == KN_MOUSEWHEEL_DOWN) {
+		Step(0);
+                key = KN_NONE;
+	    } else {
                 flags &= ~KEYBOARD;
             }
 

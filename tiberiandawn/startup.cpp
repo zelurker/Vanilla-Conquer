@@ -198,6 +198,8 @@ int DLL_Startup(const char* command_line_in)
 }
 #endif // REMASTER_BUILD
 
+char mod[80];
+
 int main(int argc, char** argv)
 {
     UtfArgs args(argc, argv);
@@ -425,6 +427,8 @@ int main(int argc, char** argv)
         */
         INIClass ini;
         ini.Load(cfile);
+
+	ini.Get_String("ModControl","ModName","",mod,80);
 
         /*
         **	Check for forced intro movie run disabling. If the conquer

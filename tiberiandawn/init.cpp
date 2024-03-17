@@ -48,6 +48,7 @@
 #include "common/paths.h"
 #include "common/winasm.h"
 #include <time.h>
+#include "ccini.h"
 
 /****************************************
 **	Function prototypes for this module **
@@ -85,6 +86,7 @@ long FAR PASCAL _export Start_Game_Proc(HWND hwnd, UINT message, UINT wParam, LO
 
 extern bool Server_Remote_Connect(void);
 extern bool Client_Remote_Connect(void);
+extern char mod[80]; // in startup.cpp
 
 /***********************************************************************************************
  * Init_Game -- Main game initialization routine.                                              *
@@ -198,6 +200,11 @@ bool Init_Game(int, char*[])
         CCDebugString("C&C95 - About to register UPDATE.MIX\n");
         new MFCD("UPDATE.MIX"); // Cached.
         new MFCD("UPDATA.MIX"); // Cached.
+	if (mod[0]) {
+	    strncat(mod,".mix",80);
+	    new MFCD(mod);
+	    MFCD::Cache(mod);
+	}
         CCDebugString("C&C95 - About to register UPDATEC.MIX\n");
         new MFCD("UPDATEC.MIX"); // Cached.
         MFCD::Cache("UPDATEC.MIX");

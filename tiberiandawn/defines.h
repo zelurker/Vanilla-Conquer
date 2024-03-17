@@ -80,9 +80,9 @@
 **	This define enables the full set of cheat keys and special
 **	command line options.
 */
-#if defined(INTERNAL_VERSION) || defined(PLAYTEST_VERSION)
+// #if defined(INTERNAL_VERSION) || defined(PLAYTEST_VERSION)
 #define CHEAT_KEYS
-#endif
+// #endif
 
 /**********************************************************************
 **	If this is defined, the special Virgin limited cheat keys

@@ -458,7 +458,7 @@ void Keyboard_Process(KeyNumType& input)
         PlayerPtr->Flag_To_Win();
     }
 
-    if ((Debug_Flag || Debug_Playtest) && plain == KN_F4) {
+    if (/* (Debug_Flag || Debug_Playtest) &&*/ plain == KN_F4) {
         if (GameToPlay == GAME_NORMAL) {
             Debug_Unshroud = (Debug_Unshroud == false);
             Map.Flag_To_Redraw(true);

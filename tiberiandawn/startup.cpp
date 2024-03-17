@@ -428,7 +428,7 @@ int main(int argc, char** argv)
         INIClass ini;
         ini.Load(cfile);
 
-	ini.Get_String("ModControl","ModName","",mod,80);
+	ini.Get_String("ModControl","ModName",mod,mod,80); // pass mod as default value, initialized by "" by default
 
         /*
         **	Check for forced intro movie run disabling. If the conquer

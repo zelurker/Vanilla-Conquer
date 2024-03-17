@@ -201,7 +201,7 @@ bool Init_Game(int, char*[])
         new MFCD("UPDATE.MIX"); // Cached.
         new MFCD("UPDATA.MIX"); // Cached.
 	if (mod[0]) {
-	    strncat(mod,".mix",80);
+	    if (stricmp(&mod[strlen(mod)-4],".mix")) strncat(mod,".mix",80);
 	    new MFCD(mod);
 	    MFCD::Cache(mod);
 	}
@@ -1924,6 +1924,10 @@ bool Parse_Command_Line(int argc, char* argv[])
             continue;
         }
 #endif
+
+
+	if (!strcmp(argv[index-1],"-mod"))
+	    strncpy(mod,argv[index++],80);
 
         /*
         **	Special command line control parsing.

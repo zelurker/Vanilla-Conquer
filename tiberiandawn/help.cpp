@@ -242,6 +242,8 @@ void HelpClass::Help_Text(int text, int x, int y, int color, bool quick, int cos
     }
 }
 
+extern char powertxt[20]; // power.cpp
+
 /***********************************************************************************************
  * HelpClass::Draw_Help -- Display the help message (if necessary).                            *
  *                                                                                             *
@@ -267,7 +269,10 @@ void HelpClass::Draw_It(bool forced)
         if (LogicPage->Lock()) {
 
             //		Fancy_Text_Print(Text, DrawX, DrawY, Color, BLACK, TPF_6POINT|TPF_NOSHADOW);
-            Fancy_Text_Print(Text, DrawX, DrawY, Color, BLACK, TPF_MAP | TPF_NOSHADOW);
+	    if (Text == -1)
+		Fancy_Text_Print(powertxt, DrawX, DrawY, Color, BLACK, TPF_MAP | TPF_NOSHADOW);
+	    else
+		Fancy_Text_Print(Text, DrawX, DrawY, Color, BLACK, TPF_MAP | TPF_NOSHADOW);
             LogicPage->Draw_Rect(DrawX - 1, DrawY - 1, DrawX + Width + 1, DrawY + FontHeight, Color);
 
             if (Cost) {

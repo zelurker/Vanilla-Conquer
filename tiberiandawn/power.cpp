@@ -447,6 +447,7 @@ int PowerClass::Power_Height(int value)
     return (retval);
 }
 
+char powertxt[20];
 /***********************************************************************************************
  * PowerClass::PowerButtonClass::Action -- Handles the mouse over the power bar area.          *
  *                                                                                             *
@@ -475,11 +476,17 @@ int PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumType& key)
     **	radar map.
     */
     Map.Override_Mouse_Shape(MOUSE_NORMAL);
+    snprintf(powertxt,20,"Power: %d / %d",PlayerPtr->Power,PlayerPtr->Drain);
+#if 0
     if (PlayerPtr->Power_Fraction() < 1 && PlayerPtr->Power > 0) {
         Map.Help_Text(TXT_POWER_OUTPUT_LOW, -1, -1, CC_GREEN);
     } else {
         Map.Help_Text(TXT_POWER_OUTPUT, -1, -1, CC_GREEN);
     }
+#else
+    // Help_Text takes only ints for its string, so we pass -1 and create a special case here to point to powertext
+    Map.Help_Text(-1, -1, -1, (PlayerPtr->Power_Fraction()<1 && PlayerPtr->Power > 0 ? RED : CC_GREEN));
+#endif
     GadgetClass::Action(flags, key);
     return (true);
 }

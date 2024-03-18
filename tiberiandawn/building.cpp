@@ -2909,6 +2909,8 @@ void BuildingClass::Grand_Opening(bool captured)
         CELL cell = Coord_Cell(Adjacent_Cell(Center_Coord(), DIR_SW));
         //		if (!Map[cell].Cell_Unit()) {
         UnitClass* unit = new UnitClass(UNIT_HARVESTER, House->Class->House);
+	// Here the harvester is given after buying a refinery, this one is normal
+	House->JustBuilt = STRUCT_NONE; // to end the delay in Suggest_New_Object
         if (unit) {
 
             /*

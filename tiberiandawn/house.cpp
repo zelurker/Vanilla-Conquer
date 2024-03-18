@@ -3559,10 +3559,12 @@ TechnoTypeClass const* HouseClass::Suggest_New_Object(RTTIType objecttype) const
             */
             if (!(GameToPlay == GAME_NORMAL && PlayerPtr->Difficulty == DIFF_EASY) && !IsHuman
                 && (ActiveBScan & STRUCTF_REFINERY) && !(UScan & UNITF_HARVESTER)) {
-                techno = &UnitTypeClass::As_Reference(UNIT_HARVESTER);
-                if (techno->Scenario <= BuildLevel)
-                    break;
-                techno = 0;
+		if (JustBuilt != STRUCT_REFINERY) {
+		    techno = &UnitTypeClass::As_Reference(UNIT_HARVESTER);
+		    if (techno->Scenario <= BuildLevel)
+			break;
+		    techno = 0;
+		}
             }
 
             int counter[UNIT_COUNT];

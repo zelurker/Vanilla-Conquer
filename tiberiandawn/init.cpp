@@ -712,6 +712,7 @@ bool Select_Game(bool fade)
         SEL_NEW_SCENARIO, // Expansion scenario to play.
 #endif
         SEL_START_NEW_GAME, // start a new game
+	SEL_MISSION,
 #ifdef BONUS_MISSIONS
         SEL_BONUS_MISSIONS,
 #endif                        // BONUS_MISSIONS
@@ -726,6 +727,7 @@ bool Select_Game(bool fade)
     int selection;           // the default selection
     bool process = true;     // false = break out of while loop
     bool display = true;
+    bool campaign_mission = false;
     CountDownTimerClass count;
 
     if (Special.IsFromInstall) {
@@ -923,29 +925,60 @@ bool Select_Game(bool fade)
                 }
                 break;
 
+	    case SEL_MISSION:
+		Scen.CarryOverMoney = 0;
+		campaign_mission = true;
+                if (Campaign_Dialog()) {
+                    switch (Fetch_Difficulty()) {
+                    case 0:
+                        Scen.CDifficulty = DIFF_HARD;
+                        Scen.Difficulty = DIFF_EASY;
+                        break;
+
+                    case 1:
+                        Scen.CDifficulty = DIFF_HARD;
+                        Scen.Difficulty = DIFF_NORMAL;
+                        break;
+
+                    case 2:
+                        Scen.CDifficulty = DIFF_NORMAL;
+                        Scen.Difficulty = DIFF_NORMAL;
+                        break;
+
+                    case 3:
+                        Scen.CDifficulty = DIFF_EASY;
+                        Scen.Difficulty = DIFF_NORMAL;
+                        break;
+
+                    case 4:
+                        Scen.CDifficulty = DIFF_EASY;
+                        Scen.Difficulty = DIFF_HARD;
+                        break;
+                    }
+
+                    Theme.Fade_Out();
+                    //						Theme.Queue_Song(THEME_AOI);
+                    GameToPlay = GAME_NORMAL;
+                    process = false;
+                } else {
+                    display = true;
+                    selection = SEL_NONE;
+                }
+                break;
+
 #ifdef BONUS_MISSIONS
 
             /*
             **	User selected to play a bonus scenario.
             */
             case SEL_BONUS_MISSIONS:
-                CarryOverMoney = 0;
+		Scen.CarryOverMoney = 0;
 
                 /*
                 ** Ensure that CD1 or CD2 is in the drive. These missions
                 ** are not on the covert CD.
                 */
-                cd_index = Get_CD_Index(CCFileClass::Get_CD_Drive(), 1 * 60);
-                /*
-                ** If cd_index == 2 then its a covert CD
-                */
-                if (cd_index == 2) {
-                    RequiredCD = 0;
-                    if (!Force_CD_Available(RequiredCD)) {
-                        Prog_End("Select_Game - CD not found", true);
-                        exit(EXIT_FAILURE);
-                    }
-                }
+		Force_CD_Available(0);
 
                 if (Bonus_Dialog()) {
                     Theme.Fade_Out();
@@ -1363,11 +1396,15 @@ bool Select_Game(bool fade)
     **	Skip this if we've already loaded a save-game.
     */
     if (!gameloaded) {
-        if (Debug_Map) {
-            Set_Scenario_Name(Scen.ScenarioName, Scen.Scenario, ScenPlayer, ScenDir, SCEN_VAR_A);
-        } else {
-            Set_Scenario_Name(Scen.ScenarioName, Scen.Scenario, ScenPlayer, ScenDir);
-        }
+	if (campaign_mission)
+            Set_Scenario_Name(Scen.ScenarioName, Scen.Scenario, ScenPlayer, ScenDir, ScenVar);
+	else {
+	    if (Debug_Map) {
+		Set_Scenario_Name(Scen.ScenarioName, Scen.Scenario, ScenPlayer, ScenDir, SCEN_VAR_A);
+	    } else {
+		Set_Scenario_Name(Scen.ScenarioName, Scen.Scenario, ScenPlayer, ScenDir);
+	    }
+	}
 
         /*
         ** Start_Scenario() changes the palette; so, fade out & clear the screen

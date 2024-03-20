@@ -259,6 +259,329 @@ bool Expansion_Dialog(void)
     return (okval);
 }
 
+bool Campaign_Dialog(void)
+{
+    // This gui is crap so this code is shamelessly copyed from the previous function, Expansion_Dialog, just changing the part about filling the list
+    int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
+
+    int option_width = 236 * factor;
+    int option_height = 162 * factor;
+    int option_x = (320 * factor - option_width) / 2;
+    int option_y = (200 * factor - option_height) / 2;
+
+    GadgetClass* buttons = NULL;
+
+    void const* up_button;
+    void const* down_button;
+
+    if (InMainLoop || factor == 1) {
+        up_button = Hires_Retrieve("BTN-UP.SHP");
+        down_button = Hires_Retrieve("BTN-DN.SHP");
+    } else {
+        up_button = Hires_Retrieve("BTN-UP2.SHP");
+        down_button = Hires_Retrieve("BTN-DN2.SHP");
+    }
+
+    TextButtonClass ok(
+        200, TXT_OK, TPF_6PT_GRAD | TPF_NOSHADOW, option_x + 25 * factor, option_y + option_height - 15 * factor);
+    TextButtonClass cancel(201,
+                           TXT_CANCEL,
+                           TPF_6PT_GRAD | TPF_NOSHADOW,
+                           option_x + option_width - 50 * factor,
+                           option_y + option_height - 15 * factor);
+    EListClass list(202,
+                    option_x + 10 * factor,
+                    option_y + 20 * factor,
+                    option_width - 20 * factor,
+                    option_height - 40 * factor,
+                    TPF_6PT_GRAD | TPF_NOSHADOW,
+                    up_button,
+                    down_button);
+
+    buttons = &ok;
+    cancel.Add(*buttons);
+    list.Add(*buttons);
+
+    /*
+    **	Add in all the expansion scenarios.
+    */
+    int index;
+    INIClass ini;
+
+    char *gdi[] = {
+	"scg01ea",
+	"scg02ea",
+	"scg03ea",
+	"scg04ea",
+	"scg04wa",
+	"scg04wb",
+	"scg05ea",
+	"scg05eb",
+	"scg05wa",
+	"scg05wb",
+	"scg06ea",
+	"scg07ea",
+	"scg08ea",
+	"scg08eb",
+	"scg09ea",
+	"scg10ea",
+	"scg10eb",
+	"scg11ea",
+	"scg12ea",
+	"scg12eb",
+	"scg13ea",
+	"scg13eb",
+	"scg14ea",
+	"scg15ea",
+	"scg15eb",
+	"scg15ec",
+    };
+
+    // For some unknown reason, westood didn't fill the Name field in the ini of the campaign missions...
+    // So I got it mainly from https://cnc.fandom.com/wiki/Category:Missions and partly from https://www.jeuxvideo.com/wikis-soluce-astuces/1235933/solution-complete-par-mission.htm
+    char *gdi_name[] = {
+	"1 X16-Y42",
+	"2 Knock Out that Refinery",
+	"3 Air Supremacy",
+
+	"4a Stolen Property (Belarus)",
+	"4aw Stolen Property (Poland)",
+	"4bw Reinforce Bialystok",
+
+	"5a Restoring Power (West Ukraine)",
+	"5aw Restoring Power (East Ukraine)",
+	"5b Restoring Power (West Germany)",
+	"5bw Restoring Power (East Germany)",
+
+	"6 Havoc",
+	"7 Destroy the Airstrip",
+
+	"8a U.N. Sanctions",
+	"8b Doctor Mobius",
+
+	"9 Clearing a Path",
+
+	"10a Orcastration (Slovenia)",
+	"10b Orcastration (Romania)",
+
+	"11 Code Name Delphi",
+
+	"12a Saving Doctor Mobius (Albania)",
+	"12b Saving Doctor Mobius (Romania)",
+
+	"13a Ion Cannon Strike (West Yugoslavia)",
+	"13b Ion Cannon Strike (East Yugoslavia)",
+	"14 Fish in a Barrel",
+	"15a Temple Strike (West Sarajevo)",
+	"15b Temple Strike (East Sarajevo)",
+	"15c Temple Strike (Center Sarajevo)",
+    };
+
+    char *nod[] = {
+	"scb01ea",
+	"scb02ea",
+	"scb02eb",
+	"scb03ea",
+	"scb03eb",
+	"scb04ea",
+	"scb04eb",
+	"scb05ea",
+	"scb06ea",
+	"scb06eb",
+	"scb06ec",
+	"scb07ea",
+	"scb07eb",
+	"scb07ec",
+	"scb08ea",
+	"scb08eb",
+	"scb09ea",
+	"scb10ea",
+	"scb10eb",
+	"scb11ea",
+	"scb11eb",
+	"scb12ea",
+	"scb13ea",
+	"scb13eb",
+	"scb13ec",
+    };
+
+    char *nod_name[] = {
+	"1 Silencing Nikoomba",
+	"2a Liberation of Egypt (North)",
+	"2b Liberation of Egypt (South)",
+	"3a Friends of the Brotherhood (East Sudan)",
+	"3b Friends of the Brotherhood (West Sudan)",
+	"4a Convoy Interception",
+	"4b False Flag Operation",
+	"5 Grounded",
+	"6a Extract the Detonator (Ivory Coast)",
+	"6b Extract the Detonator (Benign)",
+	"6c Extract the Detonator (Nigeria)",
+	"7a Sick and Dying (Gabon)",
+	"7b Sick and Dying (Cameroon)",
+	"7c Orca Heist",
+	"8a New Construction Options (West Zaire)",
+	"8b New Construction Options (East Zaire)",
+	"9 No Mercy",
+	"10a Doctor Wong",
+	"10b Belly of the Beast",
+	"11a Ezekiel's Wheel (Nambia)",
+	"11b Ezekiel's Wheel (Mozanbique)",
+	"12 Steal the Codes",
+	"13a Cradle of My Temple (Northern South Africa)",
+	"13b Cradle of My Temple (Center South Africa)",
+	"13c Cradle of My Temple (Southern South Africa)"
+    };
+
+    Force_CD_Available(0);
+    for (index = 0; index < 26; index++) {
+        char buffer[128];
+        CCFileClass file;
+
+	strcpy(buffer,gdi[index]);
+	strupr(buffer);
+	strcat(buffer,".INI");
+	file.Set_Name(buffer);
+        if (file.Is_Available()) {
+	    char *buffer = gdi_name[index];
+            char* data = new char[strlen(buffer) + 1 + sizeof(int) + 25];
+            *((int*)&data[0]) = index;
+            strcpy(&data[sizeof(int)], "GDI: ");
+            strcat(&data[sizeof(int)], buffer);
+            list.Add_Item(data);
+        }
+    }
+
+    Force_CD_Available(1);
+    for (index = 0; index < 25; index++) {
+        char buffer[128];
+        CCFileClass file;
+
+	strcpy(buffer,nod[index]);
+	strupr(buffer);
+	strcat(buffer,".INI");
+	file.Set_Name(buffer);
+        if (file.Is_Available()) {
+	    char *buffer = nod_name[index];
+            char* data = new char[strlen(buffer) + 1 + sizeof(int) + 25];
+            *((int*)&data[0]) = index;
+            strcpy(&data[sizeof(int)], "NOD: ");
+            strcat(&data[sizeof(int)], buffer);
+            list.Add_Item(data);
+        }
+    }
+
+    Set_Logic_Page(SeenBuff);
+    bool recalc = true;
+    bool display = true;
+    bool process = true;
+    bool okval = true;
+    while (process) {
+
+        Call_Back();
+
+        /*
+        ** If we have just received input focus again after running in the background then
+        ** we need to redraw.
+        */
+        if (AllSurfaces.SurfacesRestored) {
+            AllSurfaces.SurfacesRestored = false;
+            display = true;
+        }
+
+        if (display) {
+            display = false;
+
+            Hide_Mouse();
+
+            /*
+            **	Load the background picture.
+            */
+            Load_Title_Screen(TitlePicture, &HidPage, Palette);
+            Blit_Hid_Page_To_Seen_Buff();
+
+            Dialog_Box(option_x, option_y, option_width, option_height);
+            Draw_Caption(TXT_MISSION_DESCRIPTION, option_x, option_y, option_width);
+            buttons->Draw_All();
+            Show_Mouse();
+        }
+
+        KeyNumType input = buttons->Input();
+        switch (input) {
+        case KN_RETURN:
+        case 200 | KN_BUTTON:
+            if (list.Current_Item()) {
+                if (list.Current_Item()[sizeof(int)] == 'G') {
+                    ScenPlayer = SCEN_PLAYER_GDI;
+		    Force_CD_Available(0);
+                } else {
+                    ScenPlayer = SCEN_PLAYER_NOD;
+		    Force_CD_Available(1);
+                }
+		char mis[5];
+		strncpy(mis,&list.Current_Item()[9],4);
+		mis[4] = 0;
+		char *b = strchr(mis,' ');
+		if (b) *b = 0;
+		Scen.Scenario = atoi(mis);
+		char *dir = &mis[0];
+		while (*dir >= '0' && *dir <= '9')
+		    dir++;
+		if (!strcmp(dir,"a")) {
+		    ScenDir = SCEN_DIR_EAST;
+		    ScenVar = SCEN_VAR_A;
+		} else if (!strcmp(dir,"b")) {
+		    ScenDir = SCEN_DIR_EAST;
+		    ScenVar = SCEN_VAR_B;
+		} else if (!strcmp(dir,"aw")) {
+		    ScenDir = SCEN_DIR_WEST;
+		    ScenVar = SCEN_VAR_A;
+		} else if (!strcmp(dir,"bw")) {
+		    ScenDir = SCEN_DIR_WEST;
+		    ScenVar = SCEN_VAR_B;
+		} else if (!strcmp(dir,"c")) {
+		    ScenDir = SCEN_DIR_EAST;
+		    ScenVar = SCEN_VAR_C;
+		} else {
+		    printf("unknown direction for %s\n",dir);
+		    exit(1);
+		}
+
+                Whom = HOUSE_GOOD;
+                okval = true;
+                process = false;
+                break;
+            }
+
+        case KN_ESC:
+        case 201 | KN_BUTTON:
+            ScenPlayer = SCEN_PLAYER_GDI;
+            ScenDir = SCEN_DIR_EAST;
+            Whom = HOUSE_GOOD;
+            if (list.Current_Item()) {
+                Scen.Scenario = *(int*)list.Current_Item();
+            }
+            process = false;
+            okval = false;
+            break;
+
+        default:
+            break;
+        }
+
+        Frame_Limiter();
+    }
+
+    /*
+    **	Free up the allocations for the text lines in the list box.
+    */
+    for (index = 0; index < list.Count(); index++) {
+        delete[](char*) list.Get_Item(index);
+    }
+
+    return (okval);
+}
+
 /***********************************************************************************************
  * Bonus_Dialog -- Asks the user which bonus mission he wants to play                          *
  *                                                                                             *

@@ -501,6 +501,7 @@ int Main_Menu(unsigned int timeout)
 #ifdef NEWMENU
         BUTTON_EXPAND = 100 * 2,
         BUTTON_START,
+	BUTTON_MISSION,
 #ifdef BONUS_MISSIONS
         BUTTON_BONUS,
 #endif // BONUS_MISSIONS
@@ -553,6 +554,14 @@ int Main_Menu(unsigned int timeout)
 
     TextButtonClass startbtn(BUTTON_START,
                              TXT_START_NEW_GAME,
+                             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                             D_START_X,
+                             starty,
+                             D_START_W,
+                             D_START_H);
+    starty += ystep;
+    TextButtonClass misbtn(BUTTON_MISSION,
+                             "Campaign Mission...",
                              TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                              D_START_X,
                              starty,
@@ -715,6 +724,7 @@ int Main_Menu(unsigned int timeout)
         expandbtn.Add_Tail(*commands);
     }
 #endif
+    misbtn.Add_Tail(*commands);
 #ifdef BONUS_MISSIONS
     bonusbtn.Add_Tail(*commands);
 #endif // BONUS_MISSIONS
@@ -737,6 +747,7 @@ int Main_Menu(unsigned int timeout)
 
     buttons[butt++] = &expandbtn;
     buttons[butt++] = &startbtn;
+    buttons[butt++] = &misbtn;
 #ifdef BONUS_MISSIONS
     buttons[butt++] = &bonusbtn;
 #endif // BONUS_MISSIONS
@@ -854,6 +865,10 @@ int Main_Menu(unsigned int timeout)
 #else
 #define BUTTON_EXPAND BUTTON_START
 #endif
+        case (BUTTON_MISSION | KN_BUTTON):
+            retval = (input & 0x7FFF) - BUTTON_EXPAND;
+            process = false;
+            break;
 
         case (BUTTON_START | KN_BUTTON):
             retval = (input & 0x7FFF) - BUTTON_EXPAND;

@@ -462,6 +462,7 @@ void Nod_Ending(void);
 */
 bool Expansion_Present(void);
 bool Expansion_Dialog(void);
+bool Campaign_Dialog(void);
 bool Bonus_Dialog(void);
 
 /*
@@ -864,7 +865,7 @@ inline COORDINATE XYP_Coord(int x, int y)
 
 #ifdef MEGAMAPS
 /*
-**	Takes a old cell value (that assumes a map of 64x64) and adjusts it within 
+**	Takes a old cell value (that assumes a map of 64x64) and adjusts it within
 **  the new enlarged map array (128x128). All old maps are aligned to the top left
 **  of the new 128x128 map.
 */

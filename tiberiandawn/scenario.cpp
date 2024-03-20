@@ -542,6 +542,12 @@ void Do_Win(void)
                 return;
             }
 
+	    if (GameToPlay == GAME_NORMAL && PlayerPtr->Class->House == HOUSE_MULTI4) {
+		// We might get this if loading a saved game in jurassic mode on a game without the funpark argument
+		Special.IsJurassic = true;
+		AreThingiesEnabled = true;
+		ScenPlayer = SCEN_PLAYER_JP;
+	    }
             if (!Special.IsJurassic || !AreThingiesEnabled) {
                 Keyboard->Clear();
                 InterpolationPaletteChanged = true;

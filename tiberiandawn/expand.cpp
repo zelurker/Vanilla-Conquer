@@ -215,15 +215,19 @@ bool Expansion_Dialog(void)
             if (list.Current_Item()) {
                 if (list.Current_Item()[sizeof(int)] == 'G') {
                     ScenPlayer = SCEN_PLAYER_GDI;
+		    Whom = HOUSE_GOOD;
                 } else {
                     ScenPlayer = SCEN_PLAYER_NOD;
+		    Whom = HOUSE_BAD;
                 }
                 ScenDir = SCEN_DIR_EAST;
-                Whom = HOUSE_GOOD;
                 Scen.Scenario = *(int*)list.Current_Item();
 		if (Scen.Scenario == 19) {
 		    Scen.Scenario = 1;
 		    ScenPlayer = SCEN_PLAYER_JP;
+		    // These 2 are required to play the whole campaign, otherwise the game switches to the normal campaign at the end of the mission !
+		    Special.IsJurassic = true;
+		    AreThingiesEnabled = true;
 		}
                 okval = true;
                 process = false;

@@ -240,9 +240,10 @@ void TeamTypeClass::Fill_In(const char* name, const char* entry)
     UnitType u_id;                // unit ID
     AircraftType a_id;            // aircraft ID
     TeamMissionStruct mission;
-    char buf[128];
+    char buf[256];
 
-    strcpy(buf, entry);
+    strncpy(buf, entry, 256);
+    buf[255] = 0;
 
     /*
     ------------------------------ Set its name ------------------------------

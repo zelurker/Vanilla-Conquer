@@ -228,6 +228,9 @@ bool Expansion_Dialog(void)
 		    // These 2 are required to play the whole campaign, otherwise the game switches to the normal campaign at the end of the mission !
 		    Special.IsJurassic = true;
 		    AreThingiesEnabled = true;
+		} else {
+		    Special.IsJurassic = false;
+		    AreThingiesEnabled = false;
 		}
                 okval = true;
                 process = false;
@@ -272,6 +275,8 @@ bool Campaign_Dialog(void)
     int option_height = 162 * factor;
     int option_x = (320 * factor - option_width) / 2;
     int option_y = (200 * factor - option_height) / 2;
+    Special.IsJurassic = false;
+    AreThingiesEnabled = false;
 
     GadgetClass* buttons = NULL;
 

@@ -35,6 +35,11 @@
 #include "function.h"
 #include "common/framelimit.h"
 #include "common/ini.h"
+#ifdef IMGUI
+#include "imgui.h"
+#include "imgui_impl_sdl2.h"
+#include "imgui_impl_sdlrenderer2.h"
+#endif
 
 #ifdef NEWMENU
 
@@ -77,8 +82,465 @@ void EListClass::Draw_Entry(int index, int x, int y, int width, int selected)
     }
 }
 
+// table for dos to latin1 conversion found at the icu site there : https://icu4c-demos.unicode.org/icu-bin/convexp?conv=ibm-850_P100-1995&s=ALL&s=IBM
+static char corresp[256/2] = {
+    0xc7, 0xfc, 0xe9, 0xe2, 0xe4, 0xe0, 0xe5, 0xe7, 0xea, 0xeb, 0xe8, 0xef, 0xee, 0xec, 0xc4, 0xc5, // 0x80
+    0xc9, 0xe6, 0xc6, 0xf4, 0xf6, 0xf2, 0xfb, 0xf9, 0xff, 0xd6, 0xdc, 0xf8, 0xa3, 0xd8, 0xd7, 0x92, // 0x90 last is 0x192 but it's over the limit !
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0xa0 not done
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0xb0 not done
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0xc0 not done
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0xd0 not done
+    0xd3, 0xdf, 0xd4, 0xd2, 0xf5, 0xd5, 0xb5, 0xfe, 0xde, 0xda, 0xdb, 0xd9, 0xfd, 0xdd, 0xaf, 0xb4, // 0xe0
+    0xad, 0xb1, 0x17, 0xbe, 0xb6, 0xa7, 0xf7, 0xb8, 0xb0, 0xa8, 0xb7, 0xb9, 0xb3, 0xb2, 0xa0, 0xa0 // 0xf0 (2 chars out of bounds)
+};
+
+static void conv(unsigned char *s, unsigned char *s2) {
+    // Very simple dos to utf8 conversion found at https://stackoverflow.com/questions/4059775/convert-iso-8859-1-strings-to-utf-8-in-c-c
+    // The idea is to try to avoid to bring in icu, avoid dependancies as much as possible... !
+    int len = strlen((const char *)s);
+    int n;
+    // 1 conversion dos -> latin1
+    for (n=0; n<len; n++)
+	if ((s[n] >= 0x80 && s[n] <= 0x9f) || (s[n] >= 0xe0 && s[n] <= 0xef)) {
+	    s[n] = corresp[s[n]-0x80];
+	} else if (s[n] > 0x9f)
+	    printf("char out of bounds %d from string %s\n",s[n],s);
+
+    // 2 latin1 -> utf8
+    unsigned char *in = s;
+    unsigned char *out = s2;
+    while (*in) {
+	if (*in < 128) *out++ = *in++;
+	else {
+	    *out++ = 0xc0 | (*in >> 6);
+	    *out++ = (*(in++) & 0x3f) + 0x80;
+	}
+    }
+    *out++ = 0;
+}
+
 bool Expansion_Dialog(void)
 {
+#ifdef IMGUI
+    typedef struct {
+	int index;
+	char *desc;
+    } tentry;
+    bool okval = false;
+
+    tentry *data = NULL;
+    int nb_alloc = 0,n = 0, index;
+    INIClass ini;
+    extern bool imgui_active;
+    imgui_active = true;
+    SDL_SetRelativeMouseMode(SDL_FALSE);
+
+    for (index = 19; index < 340; index++) {
+        char buffer[128];
+        CCFileClass file;
+
+	if (index == 19) {
+	    file.Set_Name("SCJ01EA.INI");
+	} else {
+	    Set_Scenario_Name(buffer, index, SCEN_PLAYER_GDI, SCEN_DIR_EAST, SCEN_VAR_A);
+	    strcat(buffer, ".INI");
+	    file.Set_Name(buffer);
+	}
+        if (file.Is_Available()) {
+            ini.Clear();
+            ini.Load(file);
+            ini.Get_String("Basic", "Name", "Funpark", buffer, sizeof(buffer));
+
+	    if (n == nb_alloc) {
+		nb_alloc += 10;
+		data = (tentry*)realloc(data,sizeof(tentry)*nb_alloc);
+		memset(&data[nb_alloc-10],0,sizeof(tentry)*10);
+	    }
+	    data[n].index = index;
+	    unsigned char s[512];
+	    snprintf((char*)s,512,"GDI: %s",buffer);
+	    unsigned char s2[512];
+	    conv(s,s2);
+	    data[n++].desc = strdup((const char*)s2);
+        }
+    }
+
+    for (index = 19; index < 300; index++) {
+        char buffer[128];
+        CCFileClass file;
+
+	if (index == 19) {
+	    file.Set_Name("SCJ01EA.INI");
+	} else {
+	    Set_Scenario_Name(buffer, index, SCEN_PLAYER_NOD, SCEN_DIR_EAST, SCEN_VAR_A);
+	    strcat(buffer, ".INI");
+	    file.Set_Name(buffer);
+	}
+        if (file.Is_Available()) {
+
+            ini.Clear();
+            ini.Load(file);
+            ini.Get_String("Basic", "Name", "funpark", buffer, sizeof(buffer));
+
+	    if (n == nb_alloc) {
+		nb_alloc += 10;
+		data = (tentry*)realloc(data,sizeof(tentry)*nb_alloc);
+		memset(&data[nb_alloc-10],0,sizeof(tentry)*10);
+	    }
+	    data[n].index = index;
+	    unsigned char s[512],s2[512];
+	    snprintf((char*)s,512,"NOD: %s",buffer);
+	    conv(s,s2);
+	    data[n++].desc = strdup((const char*)s2);
+        }
+    }
+
+    int ncampaign = n;
+    char *gdi[] = {
+	"scg01ea",
+	"scg02ea",
+	"scg03ea",
+	"scg04ea",
+	"scg04wa",
+	"scg04wb",
+	"scg05ea",
+	"scg05eb",
+	"scg05wa",
+	"scg05wb",
+	"scg06ea",
+	"scg07ea",
+	"scg08ea",
+	"scg08eb",
+	"scg09ea",
+	"scg10ea",
+	"scg10eb",
+	"scg11ea",
+	"scg12ea",
+	"scg12eb",
+	"scg13ea",
+	"scg13eb",
+	"scg14ea",
+	"scg15ea",
+	"scg15eb",
+	"scg15ec",
+    };
+
+    // For some unknown reason, westood didn't fill the Name field in the ini of the campaign missions...
+    // So I got it mainly from https://cnc.fandom.com/wiki/Category:Missions and partly from https://www.jeuxvideo.com/wikis-soluce-astuces/1235933/solution-complete-par-mission.htm
+    char *gdi_name[] = {
+	"1 X16-Y42",
+	"2 Knock Out that Refinery",
+	"3 Air Supremacy",
+
+	"4a Stolen Property (Belarus)",
+	"4aw Stolen Property (Poland)",
+	"4bw Reinforce Bialystok",
+
+	"5a Restoring Power (West Ukraine)",
+	"5aw Restoring Power (East Ukraine)",
+	"5b Restoring Power (West Germany)",
+	"5bw Restoring Power (East Germany)",
+
+	"6 Havoc",
+	"7 Destroy the Airstrip",
+
+	"8a U.N. Sanctions",
+	"8b Doctor Mobius",
+
+	"9 Clearing a Path",
+
+	"10a Orcastration (Slovenia)",
+	"10b Orcastration (Romania)",
+
+	"11 Code Name Delphi",
+
+	"12a Saving Doctor Mobius (Albania)",
+	"12b Saving Doctor Mobius (Romania)",
+
+	"13a Ion Cannon Strike (West Yugoslavia)",
+	"13b Ion Cannon Strike (East Yugoslavia)",
+	"14 Fish in a Barrel",
+	"15a Temple Strike (West Sarajevo)",
+	"15b Temple Strike (East Sarajevo)",
+	"15c Temple Strike (Center Sarajevo)",
+    };
+
+    char *nod[] = {
+	"scb01ea",
+	"scb02ea",
+	"scb02eb",
+	"scb03ea",
+	"scb03eb",
+	"scb04ea",
+	"scb04eb",
+	"scb05ea",
+	"scb06ea",
+	"scb06eb",
+	"scb06ec",
+	"scb07ea",
+	"scb07eb",
+	"scb07ec",
+	"scb08ea",
+	"scb08eb",
+	"scb09ea",
+	"scb10ea",
+	"scb10eb",
+	"scb11ea",
+	"scb11eb",
+	"scb12ea",
+	"scb13ea",
+	"scb13eb",
+	"scb13ec",
+    };
+
+    char *nod_name[] = {
+	"1 Silencing Nikoomba",
+	"2a Liberation of Egypt (North)",
+	"2b Liberation of Egypt (South)",
+	"3a Friends of the Brotherhood (East Sudan)",
+	"3b Friends of the Brotherhood (West Sudan)",
+	"4a Convoy Interception",
+	"4b False Flag Operation",
+	"5 Grounded",
+	"6a Extract the Detonator (Ivory Coast)",
+	"6b Extract the Detonator (Benign)",
+	"6c Extract the Detonator (Nigeria)",
+	"7a Sick and Dying (Gabon)",
+	"7b Sick and Dying (Cameroon)",
+	"7c Orca Heist",
+	"8a New Construction Options (West Zaire)",
+	"8b New Construction Options (East Zaire)",
+	"9 No Mercy",
+	"10a Doctor Wong",
+	"10b Belly of the Beast",
+	"11a Ezekiel's Wheel (Nambia)",
+	"11b Ezekiel's Wheel (Mozanbique)",
+	"12 Steal the Codes",
+	"13a Cradle of My Temple (Northern South Africa)",
+	"13b Cradle of My Temple (Center South Africa)",
+	"13c Cradle of My Temple (Southern South Africa)"
+    };
+
+    Force_CD_Available(0);
+    for (index = 0; index < 26; index++) {
+        char buffer[128];
+        CCFileClass file;
+
+	strcpy(buffer,gdi[index]);
+	strupr(buffer);
+	strcat(buffer,".INI");
+	file.Set_Name(buffer);
+        if (file.Is_Available()) {
+	    if (n == nb_alloc) {
+		nb_alloc += 10;
+		data = (tentry*)realloc(data,sizeof(tentry)*nb_alloc);
+		memset(&data[nb_alloc-10],0,sizeof(tentry)*10);
+	    }
+
+	    data[n].index = index;
+	    unsigned char s[512];
+	    snprintf((char*)s,512,"GDI: %s",gdi_name[index]);
+	    data[n++].desc = strdup((const char*)s);
+        }
+    }
+
+    Force_CD_Available(1);
+    for (index = 0; index < 25; index++) {
+        char buffer[128];
+        CCFileClass file;
+
+	strcpy(buffer,nod[index]);
+	strupr(buffer);
+	strcat(buffer,".INI");
+	file.Set_Name(buffer);
+        if (file.Is_Available()) {
+	    if (n == nb_alloc) {
+		nb_alloc += 10;
+		data = (tentry*)realloc(data,sizeof(tentry)*nb_alloc);
+		memset(&data[nb_alloc-10],0,sizeof(tentry)*10);
+	    }
+
+	    data[n].index = index;
+	    unsigned char s[512];
+	    snprintf((char*)s,512,"NOD: %s",nod_name[index]);
+	    data[n++].desc = strdup((const char*)s);
+        }
+    }
+
+    bool disp_dlg = true;
+
+    while (disp_dlg) {
+	ImGui_ImplSDLRenderer2_NewFrame();
+	ImGui_ImplSDL2_NewFrame();
+	ImGui::NewFrame();
+
+	static int selected = 0, selected2 = 0;
+	int last;
+	ImGui::SetNextWindowSize(ImVec2(825, 514), ImGuiCond_FirstUseEver);
+	if (ImGui::Begin("New Missions", &disp_dlg, 0))
+	{
+	    // Left
+	    {
+		ImGui::BeginChild("left pane", ImVec2(311, 0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX);
+		if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
+		{
+		    if (ImGui::BeginTabItem("Covert"))
+		    {
+			for (int i = 0; i < ncampaign; i++)
+			{
+			    if (ImGui::Selectable(data[i].desc, selected == i)) {
+				last = selected = i;
+				ScenVar = SCEN_VAR_A;
+				if (data[i].desc[0] == 'G') {
+				    ScenPlayer = SCEN_PLAYER_GDI;
+				    Whom = HOUSE_GOOD;
+				} else {
+				    ScenPlayer = SCEN_PLAYER_NOD;
+				    Whom = HOUSE_BAD;
+				}
+				ScenDir = SCEN_DIR_EAST;
+				Scen.Scenario = data[i].index;
+				if (Scen.Scenario == 19) {
+				    Scen.Scenario = 1;
+				    ScenPlayer = SCEN_PLAYER_JP;
+				    // These 2 are required to play the whole campaign, otherwise the game switches to the normal campaign at the end of the mission !
+				    Special.IsJurassic = true;
+				    AreThingiesEnabled = true;
+				} else {
+				    Special.IsJurassic = false;
+				    AreThingiesEnabled = false;
+				}
+				Set_Scenario_Name(Scen.ScenarioName, Scen.Scenario, ScenPlayer, ScenDir, ScenVar);
+				ini.Clear();
+				char buf[50];
+				snprintf(buf,50,"%s.INI",Scen.ScenarioName);
+				CCFileClass file;
+				file.Set_Name(buf);
+				ini.Load(file);
+				ini.Get_TextBlock("Briefing", Scen.BriefingText, sizeof(Scen.BriefingText));
+
+				/*
+				 **	If the briefing text could not be found in the INI file, then search
+				 **	the mission.ini file.
+				 */
+				if (Scen.BriefingText[0] == '\0') {
+				    INIClass mini;
+				    CCFileClass missionIniFile("MISSION.INI");
+				    mini.Load(missionIniFile);
+				    mini.Get_TextBlock(Scen.ScenarioName, Scen.BriefingText, sizeof(Scen.BriefingText));
+				}
+				unsigned char s2[512];
+				conv((unsigned char*)Scen.BriefingText,s2);
+				strncpy(Scen.BriefingText,(const char*)s2,512);
+				Scen.BriefingText[511] = 0;
+			    }
+			}
+			ImGui::EndTabItem();
+		    }
+		    if (ImGui::BeginTabItem("Campaign"))
+		    {
+			for (int i = ncampaign; i < n; i++)
+			{
+			    if (ImGui::Selectable(data[i].desc, selected2 == i)) {
+				last = selected2 = i;
+				if (data[i].desc[0] == 'G') {
+				    ScenPlayer = SCEN_PLAYER_GDI;
+				    Whom = HOUSE_GOOD;
+				} else {
+				    ScenPlayer = SCEN_PLAYER_NOD;
+				    Whom = HOUSE_BAD;
+				}
+				char mis[5];
+				strncpy(mis,&data[i].desc[5],4); // get number + direction
+				mis[4] = 0;
+				char *b = strchr(mis,' ');
+				if (b) *b = 0;
+				Scen.Scenario = atoi(mis);
+				char *dir = &mis[0];
+				while (*dir >= '0' && *dir <= '9')
+				    dir++;
+				if (!strcmp(dir,"a") || dir[0]==0) {
+				    ScenDir = SCEN_DIR_EAST;
+				    ScenVar = SCEN_VAR_A;
+				} else if (!strcmp(dir,"b")) {
+				    ScenDir = SCEN_DIR_EAST;
+				    ScenVar = SCEN_VAR_B;
+				} else if (!strcmp(dir,"aw")) {
+				    ScenDir = SCEN_DIR_WEST;
+				    ScenVar = SCEN_VAR_A;
+				} else if (!strcmp(dir,"bw")) {
+				    ScenDir = SCEN_DIR_WEST;
+				    ScenVar = SCEN_VAR_B;
+				} else if (!strcmp(dir,"c")) {
+				    ScenDir = SCEN_DIR_EAST;
+				    ScenVar = SCEN_VAR_C;
+				} else {
+				    printf("unknown direction for %s\n",dir);
+				    exit(1);
+				}
+
+				Set_Scenario_Name(Scen.ScenarioName, Scen.Scenario, ScenPlayer, ScenDir, ScenVar);
+				ini.Clear();
+				char buf[50];
+				snprintf(buf,50,"%s.INI",Scen.ScenarioName);
+				CCFileClass file;
+				file.Set_Name(buf);
+				ini.Load(file);
+				ini.Get_TextBlock("Briefing", Scen.BriefingText, sizeof(Scen.BriefingText));
+
+				/*
+				 **	If the briefing text could not be found in the INI file, then search
+				 **	the mission.ini file.
+				 */
+				if (Scen.BriefingText[0] == '\0') {
+				    INIClass mini;
+				    CCFileClass missionIniFile("MISSION.INI");
+				    mini.Load(missionIniFile);
+				    mini.Get_TextBlock(Scen.ScenarioName, Scen.BriefingText, sizeof(Scen.BriefingText));
+				}
+				unsigned char s2[512];
+				conv((unsigned char*)Scen.BriefingText,s2);
+				strncpy(Scen.BriefingText,(const char*)s2,512);
+				Scen.BriefingText[511] = 0;
+			    }
+			}
+			ImGui::EndTabItem();
+		    }
+		}
+		ImGui::EndTabBar();
+		ImGui::EndChild();
+	    }
+	    ImGui::SameLine();
+
+	    {
+		ImGui::BeginGroup();
+		ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+		ImGui::Text(data[last].desc);
+		ImGui::Separator();
+		ImGui::TextWrapped(Scen.BriefingText);
+		ImGui::EndChild();
+		if (ImGui::Button("Go!")) {
+		    okval = true;
+		    disp_dlg = false;
+		}
+		ImGui::SameLine();
+		ImGui::EndGroup();
+	    }
+	}
+	ImGui::End();
+
+	Frame_Limiter();
+	KeyNumType key;
+	key = Keyboard->Check();
+    }
+    imgui_active = false;
+    SDL_SetRelativeMouseMode(SDL_TRUE);
+    for (int i=0; i<n; i++)
+	free(data[i].desc);
+    free(data);
+    return okval;
+
+#else
     int factor = (SeenBuff.Get_Width() == 320) ? 1 : 2;
 
     int option_width = 236 * factor;
@@ -264,8 +726,10 @@ bool Expansion_Dialog(void)
     }
 
     return (okval);
+#endif
 }
 
+#ifndef IMGUI
 bool Campaign_Dialog(void)
 {
     // This gui is crap so this code is shamelessly copyed from the previous function, Expansion_Dialog, just changing the part about filling the list
@@ -590,6 +1054,7 @@ bool Campaign_Dialog(void)
 
     return (okval);
 }
+#endif
 
 /***********************************************************************************************
  * Bonus_Dialog -- Asks the user which bonus mission he wants to play                          *

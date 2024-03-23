@@ -173,7 +173,7 @@ if(BUILD_REMASTERTD)
             RCFILE_PREFIX "RemasterTD"
         )
     endif()
-    add_library(TiberianDawn SHARED 
+    add_library(TiberianDawn SHARED
         dllinterface.cpp
         dllinterfaceeditor.cpp
         sidebarglyphx.cpp
@@ -232,7 +232,11 @@ if(BUILD_VANILLATD)
 
     target_compile_definitions(VanillaTD PUBLIC $<$<CONFIG:Debug>:_DEBUG> ${VANILLA_DEFS} MEGAMAPS)
     target_include_directories(VanillaTD PUBLIC ${CMAKE_SOURCE_DIR} .)
-    target_link_libraries(VanillaTD commonv ${VANILLA_LIBS} ${STATIC_LIBS})
+	if(BUILD_IMGUI)
+		target_link_libraries(VanillaTD commonv imgui ${VANILLA_LIBS} ${STATIC_LIBS})
+	else()
+		target_link_libraries(VanillaTD commonv ${VANILLA_LIBS} ${STATIC_LIBS})
+	endif()
     set_target_properties(VanillaTD PROPERTIES OUTPUT_NAME vanillatd)
     if(MAP_EDITORTD)
         target_compile_definitions(VanillaTD PUBLIC INTERNAL_VERSION)

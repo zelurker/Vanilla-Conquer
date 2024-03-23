@@ -3616,7 +3616,6 @@ static bool Change_Local_Dir(int cd)
 #pragma warning(disable : 4101)
 bool Force_CD_Available(int cd)
 {
-
 #ifdef REMASTER_BUILD
 
     static int _last = -1;

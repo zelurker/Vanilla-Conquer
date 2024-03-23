@@ -712,7 +712,9 @@ bool Select_Game(bool fade)
         SEL_NEW_SCENARIO, // Expansion scenario to play.
 #endif
         SEL_START_NEW_GAME, // start a new game
+#ifndef IMGUI
 	SEL_MISSION,
+#endif
 #ifdef BONUS_MISSIONS
         SEL_BONUS_MISSIONS,
 #endif                        // BONUS_MISSIONS
@@ -925,6 +927,7 @@ bool Select_Game(bool fade)
                 }
                 break;
 
+#ifndef IMGUI
 	    case SEL_MISSION:
 		Scen.CarryOverMoney = 0;
 		campaign_mission = true;
@@ -965,6 +968,7 @@ bool Select_Game(bool fade)
                     selection = SEL_NONE;
                 }
                 break;
+#endif
 
 #ifdef BONUS_MISSIONS
 

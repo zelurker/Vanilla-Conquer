@@ -123,7 +123,7 @@ bool Start_Scenario(char* root, bool briefing)
         */
         if (Scen.Scenario < 20 && (!Special.IsJurassic || !AreThingiesEnabled)) {
             if (Scen.Scenario != 1 || Whom == HOUSE_GOOD) {
-		if (ScenPlayer == SCEN_PLAYER_JP)
+		if (*BriefMovie && strcmp(BriefMovie,"x"))
                     Play_Movie(BriefMovie);
 		else
 		    Play_Movie(IntroMovie);

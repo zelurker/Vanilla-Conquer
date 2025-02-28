@@ -235,10 +235,21 @@ bool Init_Game(int, char*[])
     memset(WhitePalette, 63, 768);
 
     if (Get_Resolution_Factor()) {
-        MapFontPtr = Load_Alloc_Data(CCFileClass("8FAT.FNT"));
-        Green12FontPtr = Load_Alloc_Data(CCFileClass("12GREEN.FNT"));
-        Green12GradFontPtr = Load_Alloc_Data(CCFileClass("12GRNGRD.FNT"));
-        ScoreFontPtr = Load_Alloc_Data(CCFileClass("12GRNGRD.FNT"));
+	int fd = Open_File("8FAT.FNT", READ);
+	if (fd > 0) {
+	    Close_File(fd);
+	    printf("8FAT.FNT ok...\n");
+	    MapFontPtr = Load_Alloc_Data(CCFileClass("8FAT.FNT"));
+	    Green12FontPtr = Load_Alloc_Data(CCFileClass("12GREEN.FNT"));
+	    Green12GradFontPtr = Load_Alloc_Data(CCFileClass("12GRNGRD.FNT"));
+	    ScoreFontPtr = Load_Alloc_Data(CCFileClass("12GRNGRD.FNT"));
+	} else {
+	    printf("No 8FAT.FNT, falling back to default...\n");
+	    MapFontPtr = Font6Ptr; // Fixes ingame helpbox
+	    Green12FontPtr = Font3Ptr;
+	    Green12GradFontPtr = GradFont6Ptr;
+	    ScoreFontPtr = GradFont6Ptr;
+	}
     } else {
         MapFontPtr = Font6Ptr; // Fixes ingame helpbox
         Green12FontPtr = Font3Ptr;

@@ -2203,7 +2203,7 @@ void Play_Movie(char const* name, ThemeType theme, bool clrscrn)
                 Brokeout = false;
                 // Suspend_Audio_Thread();
 
-#if (FRENCH | GERMAN | JAPANESE)
+#if 0 // (FRENCH | GERMAN | JAPANESE)
                 /*
                 ** Kludge to use the old palette interpolation table for CC2TEASE
                 ** unless the covert CD is inserted.

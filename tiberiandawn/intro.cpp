@@ -163,7 +163,7 @@ void Choose_Side(void)
     CountDownTimerClass sample_timer;
     sample_timer.Set(0x3f);
     Alloc_Object(new ScorePrintClass(TXT_GDI_NAME, 0, 180, _yellowpal));
-#ifdef FRENCH
+#if 0 // def FRENCH
     Alloc_Object(new ScorePrintClass(TXT_GDI_NAME2, 0, 187, _yellowpal));
 #endif
     Alloc_Object(new ScorePrintClass(TXT_NOD_NAME, 180, 180, _redpal));

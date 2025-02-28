@@ -856,7 +856,7 @@ void Map_Selection(void)
     Alloc_Object(new ScorePrintClass(TXT_MAP_LOCATE, 0, 160, _greenpal));
     Call_Back_Delay(20);
     Alloc_Object(new ScorePrintClass(TXT_MAP_NEXT_MISSION, 0, 170, _greenpal));
-#if (GERMAN | FRENCH)
+#if 0 // (GERMAN | FRENCH)
     Call_Back_Delay(20);
     Alloc_Object(new ScorePrintClass(TXT_MAP_NEXT_MISS2, 0, 180, _greenpal));
 #endif

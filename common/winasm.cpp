@@ -41,8 +41,8 @@ void Asm_Interpolate_Line_Double(void* src, void* dst, int src_height, int src_w
         for (int i = 0; i < src_width - 1; ++i) {
             *wptr++ = *sptr;
             *bptr++ = *sptr;
-            *wptr++ = InterpolationTable->PaletteInterpolationTable[sptr[0]][sptr[1]];
-            *bptr++ = InterpolationTable->PaletteInterpolationTable[sptr[0]][sptr[1]];
+            *wptr++ = *sptr; //InterpolationTable->PaletteInterpolationTable[sptr[0]][sptr[1]];
+            *bptr++ = *sptr; //InterpolationTable->PaletteInterpolationTable[sptr[0]][sptr[1]];
             ++sptr;
         }
 

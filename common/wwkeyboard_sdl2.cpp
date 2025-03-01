@@ -17,6 +17,10 @@
 #include "wwkeyboard_sdl2.h"
 #include "video.h"
 #include "sdl_keymap.h"
+#ifdef IMGUI
+#include "imgui.h"
+#include "imgui_impl_sdl2.h"
+#endif
 #include "settings.h"
 #include <cmath>
 #include <SDL.h>
@@ -38,6 +42,11 @@ void WWKeyboardClassSDL2::Fill_Buffer_From_System(void)
 
     while (!Is_Buffer_Full() && SDL_PollEvent(&event)) {
         unsigned short key;
+#ifdef IMGUI
+	extern bool imgui_active;
+	if (imgui_active)
+	    ImGui_ImplSDL2_ProcessEvent(&event);
+#endif
         switch (event.type) {
         case SDL_QUIT:
             exit(0);

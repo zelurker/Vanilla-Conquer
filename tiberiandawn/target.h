@@ -183,7 +183,7 @@ public:
     void Invalidate(void)
     {
         Target.Sub.Exponent = RTTI_NONE;
-        Target.Sub.Mantissa = -1;
+        Target.Sub.Mantissa = 0xffffff; // -1; -1 produces a warning because the Mantissa is on 24 bits... Try with 0xffffff then !
     }
     bool Is_Valid(void) const
     {

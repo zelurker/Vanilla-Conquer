@@ -1,6 +1,9 @@
 #include "winasm.h"
 #include <string.h>
 
+// If you get ugly black lines in videos interpolated in 640x480 : it's because of the updat*mix files which were not present in the dos version
+// take the ones from the 1.6c patch for example and it will fix everything !
+
 struct InterpolationTable* InterpolationTable = NULL;
 
 /**
@@ -41,8 +44,8 @@ void Asm_Interpolate_Line_Double(void* src, void* dst, int src_height, int src_w
         for (int i = 0; i < src_width - 1; ++i) {
             *wptr++ = *sptr;
             *bptr++ = *sptr;
-            *wptr++ = *sptr; //InterpolationTable->PaletteInterpolationTable[sptr[0]][sptr[1]];
-            *bptr++ = *sptr; //InterpolationTable->PaletteInterpolationTable[sptr[0]][sptr[1]];
+            *wptr++ = InterpolationTable->PaletteInterpolationTable[sptr[0]][sptr[1]];
+            *bptr++ = InterpolationTable->PaletteInterpolationTable[sptr[0]][sptr[1]];
             ++sptr;
         }
 

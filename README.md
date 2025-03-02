@@ -145,3 +145,21 @@ The directory structure should look like this:
     My Documents/CnCRemastered/CnCRemastered/Mods/Red_Alert/Vanilla_RA/ccmod.json
 
 You should now see the new mod in the mods list of Red Alert Remastered.
+
+#### Fixing some glaring translation error in the french version of the game !
+
+If you use the french voices, you'll notice the assistant says "batiment" when building a unit.
+It's a translation problem, bad translation of "building" which should have been translated as
+"construction" ! If you want to fix that, it can be done relatively easily :
+download xcc tools from https://cnc-comm.com/command-and-conquer/downloads/modding-tools/XCC-utilities
+Then extract constru1.aud from the mix file, if using the classical c&c files it's in
+speech.mix, if using the 1.6c patch files, it's in speecfre.mix because you want the french
+version.
+You can load the aud file directly in audacity, but apparently it can't save aud files, at least
+it couldn't with the version I used. So open this in audacity, the woman says "construction
+terminée", with a noticeable silence between the 2 words, so cut the file after the 1st word,
+done very easily in this case since they are so clearly separated. Save in wav format then.
+Use xcc mixer, right click on the new wav file, copy as aud. Good. Now exit, rename the new aud
+file to bldging1.aud, and just place this in your c&c main directory, it will have priority on
+the one in the mix file, that's all !
+

@@ -196,7 +196,7 @@ bool Expansion_Dialog(void)
     }
 
     int ncampaign = n;
-    char *gdi[] = {
+    const char *gdi[] = {
 	"scg01ea",
 	"scg02ea",
 	"scg03ea",
@@ -227,7 +227,7 @@ bool Expansion_Dialog(void)
 
     // For some unknown reason, westood didn't fill the Name field in the ini of the campaign missions...
     // So I got it mainly from https://cnc.fandom.com/wiki/Category:Missions and partly from https://www.jeuxvideo.com/wikis-soluce-astuces/1235933/solution-complete-par-mission.htm
-    char *gdi_name[] = {
+    const char *gdi_name[] = {
 	"1 X16-Y42",
 	"2 Knock Out that Refinery",
 	"3 Air Supremacy",
@@ -265,7 +265,7 @@ bool Expansion_Dialog(void)
 	"15c Temple Strike (Center Sarajevo)",
     };
 
-    char *nod[] = {
+    const char *nod[] = {
 	"scb01ea",
 	"scb02ea",
 	"scb02eb",
@@ -293,7 +293,7 @@ bool Expansion_Dialog(void)
 	"scb13ec",
     };
 
-    char *nod_name[] = {
+    const char *nod_name[] = {
 	"1 Silencing Nikoomba",
 	"2a Liberation of Egypt (North)",
 	"2b Liberation of Egypt (South)",
@@ -376,7 +376,8 @@ bool Expansion_Dialog(void)
 
 	static int selected = 0, selected2 = 0;
 	int last;
-	ImGui::SetNextWindowSize(ImVec2(825, 514), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(825, 514), ImGuiCond_Once);
+	ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x/2, 0), ImGuiCond_Once, ImVec2(0.5f,0));
 	if (ImGui::Begin("New Missions", &disp_dlg, 0))
 	{
 	    // Left

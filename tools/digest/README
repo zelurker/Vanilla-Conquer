@@ -1,0 +1,7 @@
+c&c sometimes stores the files in its mix files as a 4 bytes digest instead of using the normal
+filename. This tool just gives the corresponding digest for a given filename passed on the
+command line. For example :
+./digest CONQUER.FRE
+a22319fd
+And so conquer.fre is stored as a22319fd ! (in cclocal.mix usually).
+

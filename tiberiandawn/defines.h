@@ -1714,7 +1714,8 @@ typedef union
         unsigned Exponent : TARGET_EXPONENT;
         unsigned Mantissa : TARGET_MANTISSA;
 #else
-        unsigned Mantissa : TARGET_MANTISSA;
+	// With : TARGET_MANTISSA I get a warning for MANTISSA=-1 in line 186 of target.h for every file which includes it !
+        unsigned Mantissa; // : TARGET_MANTISSA;
         unsigned Exponent : TARGET_EXPONENT;
 #endif
     } Sub;

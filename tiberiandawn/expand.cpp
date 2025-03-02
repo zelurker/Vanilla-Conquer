@@ -366,10 +366,12 @@ bool Expansion_Dialog(void)
 	    data[n++].desc = strdup((const char*)s);
         }
     }
+    Theme.Queue_Song(THEME_MAP1); // Force_CD_Available stops the music playing for some reason, this is the default theme for the main menu
 
     bool disp_dlg = true;
 
     while (disp_dlg) {
+	Call_Back(); // required to update sound
 	ImGui_ImplSDLRenderer2_NewFrame();
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();

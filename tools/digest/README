@@ -5,3 +5,5 @@ command line. For example :
 a22319fd
 And so conquer.fre is stored as a22319fd ! (in cclocal.mix usually).
 
+It's some standard C, so it can be compiled simply by gcc -o digest digest.c (in linux at least).
+

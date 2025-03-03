@@ -386,7 +386,7 @@ void DisplayClass::Init_Theater(TheaterType theater)
     */
     sprintf(fullname, "%s.MIX", Theaters[Theater].Root);
     strcpy(iconname, fullname);
-    strcpy(&iconname[4], "ICNH.MIX");
+    sprintf(&iconname[4], "%s.MIX", get_icnh());
     if (Theater != LastTheater) {
         if (TheaterIcons) {
             delete TheaterIcons;

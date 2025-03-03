@@ -485,7 +485,7 @@ int PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumType& key)
     }
 #else
     // Help_Text takes only ints for its string, so we pass -1 and create a special case here to point to powertext
-    Map.Help_Text(-1, -1, -1, (PlayerPtr->Power_Fraction()<1 && PlayerPtr->Power > 0 ? RED : CC_GREEN));
+    Map.Help_Text(-1, -1, -1, (PlayerPtr->Power_Fraction()<1 && PlayerPtr->Power > 0 ? RED : GREEN));
 #endif
     GadgetClass::Action(flags, key);
     return (true);

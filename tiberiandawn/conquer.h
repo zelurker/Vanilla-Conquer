@@ -771,3 +771,6 @@
 #define TXT_BONUS_MISSION_5                         754 // Bonus Mission 5
 #define TXT_LOW_POWER                               755
 #define TXT_INSUFFICIENT_FUNDS                      756
+
+extern const char *get_icnh();
+

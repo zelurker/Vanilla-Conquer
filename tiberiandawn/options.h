@@ -91,6 +91,7 @@ public:
     unsigned IsScoreShuffle : 1;  // Score list should shuffle?
     unsigned IsDeathAnnounce : 1; // Announce enemy deaths?
     unsigned IsFreeScroll : 1;    // Allow free direction scrolling?
+    int Language; // like the audio tracks for the remastered edition : 0 = english, 1 = german, 2 = french what happened to japanese ?
 
     /*
     **	These are the hotkeys used for keyboard control.

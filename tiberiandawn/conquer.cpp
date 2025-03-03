@@ -1341,7 +1341,11 @@ char const* Language_Name(char const* basename)
     if (!basename)
         return (NULL);
 
-    sprintf(_fullname, "%s.ENG", basename);
+    switch(Options.Language) {
+    case 1: sprintf(_fullname, "%s.GER", basename); break;
+    case 2: sprintf(_fullname, "%s.FRE", basename); break;
+    default: sprintf(_fullname, "%s.ENG", basename); break; // Option 0 normally, and default
+    }
     return (_fullname);
 }
 
@@ -4049,4 +4053,13 @@ bool Is_DOS_Files(void)
     }
 
     return is_dos;
+}
+
+// Returns the extension appropriate for files from patch 1.6c, ICNH remains the default (english)
+const char *get_icnh() {
+    switch(Options.Language) {
+    case 2: return "IFRE"; break;
+    case 1: return "IGER"; break;
+    default: return "ICNH"; break; // What is IDOS for ?
+    }
 }

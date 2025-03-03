@@ -564,6 +564,7 @@ void OptionsClass::Load_Settings(void)
     **	Read in the Options values
     */
     static char const* const OPTIONS = "Options";
+    Language = ini.Get_Int(OPTIONS, "Language", 0);
     GameSpeed = ini.Get_Int(OPTIONS, "GameSpeed", 4);
     ScrollRate = ini.Get_Int(OPTIONS, "ScrollRate", 4);
     Set_Brightness(ini.Get_Int(OPTIONS, "Brightness", 0x80));
@@ -817,6 +818,7 @@ void OptionsClass::Save_Settings(void)
     **	Save Options settings
     */
     static char const* const OPTIONS = "Options";
+    ini.Put_Int(OPTIONS, "Language", Language);
     ini.Put_Int(OPTIONS, "GameSpeed", GameSpeed);
     ini.Put_Int(OPTIONS, "ScrollRate", ScrollRate);
     ini.Put_Int(OPTIONS, "Brightness", Brightness);

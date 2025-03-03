@@ -201,7 +201,7 @@ bool Init_Game(int, char*[])
         new MFCD("UPDATE.MIX"); // Cached.
         new MFCD("UPDATA.MIX"); // Cached.
 	if (mod[0]) {
-	    if (stricmp(&mod[strlen(mod)-4],".mix")) strncat(mod,".mix",80);
+	    if (stricmp(&mod[strlen(mod)-4],".mix")) strncat(mod,".mix",80-strlen(mod));
 	    new MFCD(mod);
 	    MFCD::Cache(mod);
 	}
@@ -286,6 +286,13 @@ bool Init_Game(int, char*[])
         Keyboard->Check();
     } while (!GameInFocus);
     AllSurfaces.SurfacesRestored = false;
+
+    CCDebugString("C&C95 - Reading settings...\n");
+    /*
+    **	Read game options, so the GameSpeed is initialized when multiplayer
+    ** dialogs are invoked.  (GameSpeed must be synchronized between systems.)
+    */
+    Options.Load_Settings();
 
     CCDebugString("C&C95 - About to load the language file\n");
     /*
@@ -453,11 +460,23 @@ bool Init_Game(int, char*[])
     **	copied the coorect versions to the hard drive.
     */
     CCDebugString("C&C95 - About to register SPEECH.MIX\n");
-    if (CCFileClass("SPEECH.MIX").Is_Available()) {
-        new MFCD("SPEECH.MIX"); // Never cached.
+    char speech[20];
+    switch (Options.Language) {
+    case 1: sprintf(speech,"SPEECGER.MIX"); break;
+    case 2: sprintf(speech,"SPEECFRE.MIX"); break;
+    default: sprintf(speech,"SPEECENG.MIX"); break;
     }
+    if (CCFileClass(speech).Is_Available())
+	new MFCD(speech);
+    else
+	new MFCD("SPEECH.MIX");
     CCDebugString("C&C95 - About to register SOUNDS.MIX\n");
     new MFCD("SOUNDS.MIX"); // Cached.
+    switch (Options.Language) {
+    case 1: new MFCD("TALKGER.MIX"); MFCD::Cache("TALKGER.MIX"); break;
+    case 2: new MFCD("TALKFRE.MIX"); MFCD::Cache("TALKFRE.MIX"); break;
+    default: new MFCD("TALKENG.MIX"); MFCD::Cache("TALKENG.MIX"); break;
+    }
     new MFCD("SC-000.MIX");
     MFCD::Cache("SC-000.MIX"); // required to get the dino sounds, DINOATK1 for example, when playing funpark
 
@@ -616,12 +635,6 @@ bool Init_Game(int, char*[])
     */
     memcpy(GamePalette, Palette, 768);
     memcpy(OriginalPalette, Palette, 768);
-
-    /*
-    **	Read game options, so the GameSpeed is initialized when multiplayer
-    ** dialogs are invoked.  (GameSpeed must be synchronized between systems.)
-    */
-    Options.Load_Settings();
 
     /*
     ** Now that conquer.ini has been read, we can check if we need zounds.mix.

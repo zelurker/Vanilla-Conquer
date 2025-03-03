@@ -271,21 +271,25 @@ void SidebarClass::Init_Clear(void)
  *=============================================================================================*/
 void SidebarClass::Init_IO(void)
 {
-#if (FRENCH)
-    const char* repair_shp = "REPAIRF.SHP";
-    const char* sell_shp = "SELLF.SHP";
-    const char* map_shp = "MAPF.SHP";
-#else
-#if (GERMAN)
-    const char* repair_shp = "REPAIRG.SHP";
-    const char* sell_shp = "SELLG.SHP";
-    const char* map_shp = "MAPG.SHP";
-#else
-    const char* repair_shp = "REPAIR.SHP";
-    const char* sell_shp = "SELL.SHP";
-    const char* map_shp = "MAP.SHP";
-#endif
-#endif
+    const char* repair_shp; // = "REPAIRF.SHP";
+    const char* sell_shp; // = "SELLF.SHP";
+    const char* map_shp; // = "MAPF.SHP";
+    switch(Options.Language) {
+    case 1:
+	repair_shp = "REPAIRG.SHP";
+	sell_shp = "SELLG.SHP";
+	map_shp = "MAPG.SHP";
+	break;
+    case 2:
+	repair_shp = "REPAIRF.SHP";
+	sell_shp = "SELLF.SHP";
+	map_shp = "MAPF.SHP";
+	break;
+    default:
+	repair_shp = "REPAIR.SHP";
+	sell_shp = "SELL.SHP";
+	map_shp = "MAP.SHP";
+    }
 
     void* oldfont;
     int oldx;

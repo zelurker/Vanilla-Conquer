@@ -94,10 +94,9 @@ static unsigned char corresp[256/2] = {
     0xad, 0xb1, 0x17, 0xbe, 0xb6, 0xa7, 0xf7, 0xb8, 0xb0, 0xa8, 0xb7, 0xb9, 0xb3, 0xb2, 0xa0, 0xa0 // 0xf0 (2 chars out of bounds)
 };
 
-static void conv(unsigned char *s, unsigned char *s2) {
-    // Very simple dos to utf8 conversion found at https://stackoverflow.com/questions/4059775/convert-iso-8859-1-strings-to-utf-8-in-c-c
-    // The idea is to try to avoid to bring in icu, avoid dependancies as much as possible... !
+static void conv_dos_latin1(unsigned char *s) {
     int len = strlen((const char *)s);
+
     int n;
     // 1 conversion dos -> latin1
     for (n=0; n<len; n++)
@@ -105,7 +104,11 @@ static void conv(unsigned char *s, unsigned char *s2) {
 	    s[n] = corresp[s[n]-0x80];
 	} else if (s[n] > 0x9f)
 	    printf("char out of bounds %d from string %s\n",s[n],s);
+}
 
+static void conv_latin1_utf8(unsigned char *s, unsigned char *s2) {
+    // Little use to make this global : most of the time the editors overwrite latin1 characters in sources to convert them with an utf8 prefix
+    // which would make this function to fail. It's much better to take the original source and convert it to utf8 with a tool.
     // 2 latin1 -> utf8
     unsigned char *in = s;
     unsigned char *out = s2;
@@ -117,6 +120,16 @@ static void conv(unsigned char *s, unsigned char *s2) {
 	}
     }
     *out++ = 0;
+}
+
+void conv_dos_utf8(const char *s1, unsigned char *s2) {
+    // Very simple dos to utf8 conversion found at https://stackoverflow.com/questions/4059775/convert-iso-8859-1-strings-to-utf-8-in-c-c
+    // The idea is to try to avoid to bring in icu, avoid dependancies as much as possible... !
+    unsigned char *s = (unsigned char*)strdup(s1);
+    conv_dos_latin1(s);
+
+    conv_latin1_utf8(s,s2);
+    free(s);
 }
 
 bool Expansion_Dialog(void)
@@ -160,7 +173,7 @@ bool Expansion_Dialog(void)
 	    unsigned char s[512];
 	    snprintf((char*)s,512,"GDI: %s",buffer);
 	    unsigned char s2[512];
-	    conv(s,s2);
+	    conv_dos_utf8((const char*)s,s2);
 	    data[n++].desc = strdup((const char*)s2);
         }
     }
@@ -190,7 +203,7 @@ bool Expansion_Dialog(void)
 	    data[n].index = index;
 	    unsigned char s[512],s2[512];
 	    snprintf((char*)s,512,"NOD: %s",buffer);
-	    conv(s,s2);
+	    conv_dos_utf8((const char*)s,s2);
 	    data[n++].desc = strdup((const char*)s2);
         }
     }
@@ -433,7 +446,7 @@ bool Expansion_Dialog(void)
 				    mini.Get_TextBlock(Scen.ScenarioName, Scen.BriefingText, sizeof(Scen.BriefingText));
 				}
 				unsigned char s2[512];
-				conv((unsigned char*)Scen.BriefingText,s2);
+				conv_dos_utf8(Scen.BriefingText,s2);
 				strncpy(Scen.BriefingText,(const char*)s2,512);
 				Scen.BriefingText[511] = 0;
 			    }
@@ -502,7 +515,7 @@ bool Expansion_Dialog(void)
 				    mini.Get_TextBlock(Scen.ScenarioName, Scen.BriefingText, sizeof(Scen.BriefingText));
 				}
 				unsigned char s2[512];
-				conv((unsigned char*)Scen.BriefingText,s2);
+				conv_dos_utf8(Scen.BriefingText,s2);
 				strncpy(Scen.BriefingText,(const char*)s2,512);
 				Scen.BriefingText[511] = 0;
 			    }

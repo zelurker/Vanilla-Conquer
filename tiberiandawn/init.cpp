@@ -287,13 +287,6 @@ bool Init_Game(int, char*[])
     } while (!GameInFocus);
     AllSurfaces.SurfacesRestored = false;
 
-    CCDebugString("C&C95 - Reading settings...\n");
-    /*
-    **	Read game options, so the GameSpeed is initialized when multiplayer
-    ** dialogs are invoked.  (GameSpeed must be synchronized between systems.)
-    */
-    Options.Load_Settings();
-
     CCDebugString("C&C95 - About to load the language file\n");
     /*
     **	Fetch the language text from the hard drive first. If it cannot be
@@ -1720,79 +1713,81 @@ bool Parse_Command_Line(int argc, char* argv[])
         */
         if (stricmp("/?", string) == 0 || stricmp("-?", string) == 0 || stricmp("-h", string) == 0
             || stricmp("/h", string) == 0) {
+	    unsigned char s2[512],*s;
             /*
             **	Unrecognized command line parameter... Display usage
             **	and then exit.
             */
-#ifdef GERMAN
-            puts("Command & Conquer (c) 1995,1996 Westwood Studios\r\n"
-                 "Parameter:\r\n"
-                 //						"  -CD<Pfad> = Suchpfad f?r Daten-Dateien festlegen.\r\n"
-                 "  -DESTNET  = Netzwerkkennung des Zielrechners festlegen\r\n"
-                 "              (Syntax: DESTNETxx.xx.xx.xx)\r\n"
-                 "  -SOCKET   = Kennung des Netzwerk-Sockets (0 - 16383)\n"
-                 "  -STEALTH  = Namen im Mehrspieler-Modus verstecken (\"Boss-Modus\")\r\n"
-                 "  -MESSAGES = Mitteilungen von au�erhalb des Spiels zulassen\r\n"
-                 //					"  -ELITE    = Fortgeschrittene KI und Gefechtstechniken.\r\n"
-                 "\r\n");
-#else
-#ifdef FRENCH
-            puts("Command & Conquer (c) 1995, Westwood Studios\r\n"
-                 "Param�tres:\r\n"
-                 //						"  -CD<chemin d'acc�s> = Recherche des fichiers dans le\r\n"
-                 //						"                        r�pertoire indiqu�.\r\n"
-                 "  -DESTNET  = Sp�cifier le num�ro de r�seau du syst�me de destination\r\n"
-                 "              (Syntaxe: DESTNETxx.xx.xx.xx)\r\n"
-                 "  -SOCKET   = ID poste r�seau (0 � 16383)\r\n"
-                 "  -STEALTH  = Cacher les noms en mode multijoueurs (\"Mode Boss\")\r\n"
-                 "  -MESSAGES = Autorise les messages ext�rieurs � ce jeu.\r\n"
-                 "\r\n");
-#else
-            puts("Command & Conquer (c) 1995, 1996 Westwood Studios\r\n"
-                 "Parameters:\r\n"
+	    switch(Options.Language) {
+	    case 1:
+		puts("Command & Conquer (c) 1995,1996 Westwood Studios\r\n"
+			"Parameter:\r\n"
+			//						"  -CD<Pfad> = Suchpfad für Daten-Dateien festlegen.\r\n"
+			"  -DESTNET  = Netzwerkkennung des Zielrechners festlegen\r\n"
+			"              (Syntax: DESTNETxx.xx.xx.xx)\r\n"
+			"  -SOCKET   = Kennung des Netzwerk-Sockets (0 - 16383)\n"
+			"  -STEALTH  = Namen im Mehrspieler-Modus verstecken (\"Boss-Modus\")\r\n"
+			"  -MESSAGES = Mitteilungen von außerhalb des Spiels zulassen\r\n"
+			//					"  -ELITE    = Fortgeschrittene KI und Gefechtstechniken.\r\n"
+			"\r\n");
+		break;
+	    case 2:
+		puts("Command & Conquer (c) 1995, Westwood Studios\r\n"
+			"Paramètres:\r\n"
+			//						"  -CD<chemin d'accès> = Recherche des fichiers dans le\r\n"
+			//						"                        répertoire indiqué.\r\n"
+			"  -DESTNET  = Spécifier le numéro de réseau du système de destination\r\n"
+			"              (Syntaxe: DESTNETxx.xx.xx.xx)\r\n"
+			"  -SOCKET   = ID poste réseau (0 à 16383)\r\n"
+			"  -STEALTH  = Cacher les noms en mode multijoueurs (\"Mode Boss\")\r\n"
+			"  -MESSAGES = Autorise les messages extérieurs à ce jeu.\r\n"
+			"\r\n");
+		break;
+	    default:
+		puts("Command & Conquer (c) 1995, 1996 Westwood Studios\r\n"
+			"Parameters:\r\n"
 #ifdef NEVER
-                 "  CHEAT     = Enable debug keys.\r\n"
-                 "  -EDITOR    = Enable scenario editor.\r\n"
+			"  CHEAT     = Enable debug keys.\r\n"
+			"  -EDITOR    = Enable scenario editor.\r\n"
 #endif
-                 //						"  -CD<path> = Set search path for data files.\r\n"
-                 "  -DESTNET  = Specify Network Number of destination system\r\n"
-                 "              (Syntax: DESTNETxx.xx.xx.xx)\r\n"
-                 "  -STEALTH  = Hide multiplayer names (\"Boss mode\")\r\n"
-                 "  -MESSAGES = Allow messages from outside this game.\r\n"
-                 "  -o        = Enable compatability with version 1.07.\r\n"
+			//						"  -CD<path> = Set search path for data files.\r\n"
+			"  -DESTNET  = Specify Network Number of destination system\r\n"
+			"              (Syntax: DESTNETxx.xx.xx.xx)\r\n"
+			"  -STEALTH  = Hide multiplayer names (\"Boss mode\")\r\n"
+			"  -MESSAGES = Allow messages from outside this game.\r\n"
+			"  -o        = Enable compatability with version 1.07.\r\n"
 #ifdef JAPANESE
-                 "  -ENGLISH  = Enable English keyboard compatibility.\r\n"
+			"  -ENGLISH  = Enable English keyboard compatibility.\r\n"
 #endif
-//					"  -ELITE    = Advanced AI and combat characteristics.\r\n"
+			//					"  -ELITE    = Advanced AI and combat characteristics.\r\n"
 #ifdef NEVER
-                 "  -O[options]= Special control options;\r\n"
-                 "     1 : Tiberium grows.\r\n"
-                 "     2 : Tiberium grows and spreads.\r\n"
-                 "     A : Aggressive player unit defense enabled.\r\n"
-                 "     B : Bargraphs always displayed.\r\n"
-                 "     C : Capture the flag mode.\r\n"
-                 "     E : Elite defense mode disable (attacker advantage).\r\n"
-                 "     D : Deploy reversal allowed for construction yard.\r\n"
-                 "     F : Fleeing from direct immediate threats is enabled.\r\n"
-                 "     H : Hussled recharge time.\r\n"
-                 "     G : Growth for Tiberium slowed in multiplay.\r\n"
-                 "     I : Inert weapons -- no damage occurs.\r\n"
-                 "     J : 7th grade sound effects.\r\n"
-                 "     M : Monochrome debug messages.\r\n"
-                 "     N : Name the civilians and buildings.\r\n"
-                 "     P : Path algorithm displayed as it works.\r\n"
-                 "     Q : Quiet mode (no sound).\r\n"
-                 "     R : Road pieces are not added to buildings.\r\n"
-                 "     T : Three point turns for wheeled vehicles.\r\n"
-                 "     U : U can target and burn trees.\r\n"
-                 "     V : Show target selection by opponent.\r\n"
-                 "     X : Make a recording of a multiplayer game.\r\n"
-                 "     Y : Play a recording of a multiplayer game.\r\n"
-                 "     Z : Disaster containment team.\r\n"
+			"  -O[options]= Special control options;\r\n"
+			"     1 : Tiberium grows.\r\n"
+			"     2 : Tiberium grows and spreads.\r\n"
+			"     A : Aggressive player unit defense enabled.\r\n"
+			"     B : Bargraphs always displayed.\r\n"
+			"     C : Capture the flag mode.\r\n"
+			"     E : Elite defense mode disable (attacker advantage).\r\n"
+			"     D : Deploy reversal allowed for construction yard.\r\n"
+			"     F : Fleeing from direct immediate threats is enabled.\r\n"
+			"     H : Hussled recharge time.\r\n"
+			"     G : Growth for Tiberium slowed in multiplay.\r\n"
+			"     I : Inert weapons -- no damage occurs.\r\n"
+			"     J : 7th grade sound effects.\r\n"
+			"     M : Monochrome debug messages.\r\n"
+			"     N : Name the civilians and buildings.\r\n"
+			"     P : Path algorithm displayed as it works.\r\n"
+			"     Q : Quiet mode (no sound).\r\n"
+			"     R : Road pieces are not added to buildings.\r\n"
+			"     T : Three point turns for wheeled vehicles.\r\n"
+			"     U : U can target and burn trees.\r\n"
+			"     V : Show target selection by opponent.\r\n"
+			"     X : Make a recording of a multiplayer game.\r\n"
+			"     Y : Play a recording of a multiplayer game.\r\n"
+			"     Z : Disaster containment team.\r\n"
 #endif
-                 "\r\n");
-#endif
-#endif
+			"\r\n");
+	    }
             return (false);
         }
 
@@ -2095,15 +2090,16 @@ bool Parse_Command_Line(int argc, char* argv[])
 #endif
 
                 default:
-#ifdef GERMAN
-                    puts("Ung?ltiger Parameter.\n");
-#else
-#ifdef FRENCH
-                    puts("Commande d'option invalide.\n");
-#else
-                    puts("Invalid option switch.\n");
-#endif
-#endif
+		    switch(Options.Language) {
+		    case 1:
+			puts("Ungültiger Parameter.\n");
+			break;
+		    case 2:
+			puts("Commande d'option invalide.\n");
+			break;
+		    default:
+			puts("Invalid option switch.\n");
+		    }
                     return (false);
                 }
             }

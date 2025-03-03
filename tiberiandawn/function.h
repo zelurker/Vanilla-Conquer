@@ -461,6 +461,7 @@ void Nod_Ending(void);
 **	EXPAND.CPP
 */
 bool Expansion_Present(void);
+void conv_dos_utf8(const char *s, unsigned char *s2);
 bool Expansion_Dialog(void);
 bool Campaign_Dialog(void);
 bool Bonus_Dialog(void);

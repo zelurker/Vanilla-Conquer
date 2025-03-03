@@ -206,15 +206,16 @@ int main(int argc, char** argv)
     CCDebugString("C&C95 - Starting up.\n");
 
     if (Ram_Free(MEM_NORMAL) < 5000000) {
-#ifdef GERMAN
-        printf("Zuwenig Hauptspeicher verf?gbar.\n");
-#else
-#ifdef FRENCH
-        printf("M‚moire vive (RAM) insuffisante.\n");
-#else
-        printf("Insufficient RAM available.\n");
-#endif
-#endif
+	switch(Options.Language) {
+	case 1:
+	    printf("Zuwenig Hauptspeicher verfügbar.\n"); // converted from dos to uf8 !
+	    break;
+	case 2:
+	    printf("Mémoire vive (RAM) insuffisante.\n",s2);
+	    break;
+	default:
+	    printf("Insufficient RAM available.\n");
+	}
         return (EXIT_FAILURE);
     }
 
@@ -227,6 +228,13 @@ int main(int argc, char** argv)
     */
     Paths.Init("vanillatd", "CONQUER.INI", "CONQUER.MIX", args.ArgV[0]);
     CDFileClass::Refresh_Search_Drives();
+
+    CCDebugString("C&C95 - Reading settings...\n");
+    /*
+    **	Read game options, so the GameSpeed is initialized when multiplayer
+    ** dialogs are invoked.  (GameSpeed must be synchronized between systems.)
+    */
+    Options.Load_Settings();
 
     if (Parse_Command_Line(args.ArgC, args.ArgV)) {
 

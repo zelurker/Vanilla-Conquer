@@ -123,7 +123,10 @@ bool Start_Scenario(char* root, bool briefing)
         */
         if (Scen.Scenario < 20 && (!Special.IsJurassic || !AreThingiesEnabled)) {
             if (Scen.Scenario != 1 || Whom == HOUSE_GOOD) {
-		if (*BriefMovie && strcmp(BriefMovie,"x"))
+		// if (*BriefMovie && strcmp(BriefMovie,"x"))
+		// This test was part of imgui activation, so probably a mistake while testing something else
+		// now I have the campaign movies playing twice, so something is bad somewhere...
+		if (ScenPlayer == SCEN_PLAYER_JP)
                     Play_Movie(BriefMovie);
 		else
 		    Play_Movie(IntroMovie);

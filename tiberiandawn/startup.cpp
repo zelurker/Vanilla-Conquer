@@ -211,7 +211,7 @@ int main(int argc, char** argv)
 	    printf("Zuwenig Hauptspeicher verfügbar.\n"); // converted from dos to uf8 !
 	    break;
 	case 2:
-	    printf("Mémoire vive (RAM) insuffisante.\n",s2);
+	    printf("Mémoire vive (RAM) insuffisante.\n");
 	    break;
 	default:
 	    printf("Insufficient RAM available.\n");

@@ -147,7 +147,9 @@ bool Expansion_Dialog(void)
     extern bool imgui_active;
     imgui_active = true;
     SDL_SetRelativeMouseMode(SDL_FALSE);
+    int force_cd = -1;
 
+    Force_CD_Available(2);
     for (index = 19; index < 340; index++) {
         char buffer[128];
         CCFileClass file;
@@ -405,6 +407,7 @@ bool Expansion_Dialog(void)
 			for (int i = 0; i < ncampaign; i++)
 			{
 			    if (ImGui::Selectable(data[i].desc, selected == i)) {
+				force_cd = 2;
 				last = selected = i;
 				ScenVar = SCEN_VAR_A;
 				if (data[i].desc[0] == 'G') {
@@ -462,9 +465,11 @@ bool Expansion_Dialog(void)
 				if (data[i].desc[0] == 'G') {
 				    ScenPlayer = SCEN_PLAYER_GDI;
 				    Whom = HOUSE_GOOD;
+				    force_cd = 0;
 				} else {
 				    ScenPlayer = SCEN_PLAYER_NOD;
 				    Whom = HOUSE_BAD;
+				    force_cd = 1;
 				}
 				char mis[5];
 				strncpy(mis,&data[i].desc[5],4); // get number + direction
@@ -554,6 +559,9 @@ bool Expansion_Dialog(void)
     for (int i=0; i<n; i++)
 	free(data[i].desc);
     free(data);
+    if (okval) { // Go pressed
+	Force_CD_Available(force_cd);
+    }
     return okval;
 
 #else

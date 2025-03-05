@@ -179,7 +179,6 @@ endif()
 
 if(BUILD_IMGUI)
 	add_subdirectory(imgui)
-	list(APPEND VC_CXX_FLAGS -DIMGUI)
 endif()
 
 add_subdirectory(common)

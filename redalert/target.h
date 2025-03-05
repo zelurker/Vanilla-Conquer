@@ -165,7 +165,7 @@ public:
     void Invalidate(void)
     {
         Target.Sub.Exponent = RTTI_NONE;
-        Target.Sub.Mantissa = -1;
+        Target.Sub.Mantissa = 0xffffff; // -1:24
     }
     bool Is_Valid(void) const
     {
